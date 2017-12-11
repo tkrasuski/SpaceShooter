@@ -7,17 +7,17 @@ import Logic
 pygame.init()
 BLACK = (0,0,0)
 
-# ekran do gry
+# Display resolution 
 x=1024
 y=768
-# punkty
+# Game points
 points = 0
 
 gameDisplay = pygame.display.set_mode((x,y))
 pygame.display.set_caption(u'Space Shooter')
 pygame.display.update()
 gameExit = False
-# tekst
+# text and fonts
 myfont = pygame.font.SysFont("monospace", 15)
 mybiggerfont = pygame.font.SysFont("monospace", 30)
 def banner(txt):
@@ -33,44 +33,46 @@ def banner(txt):
         gameDisplay.blit(label,(400,400))
         gameDisplay.blit(ptnlab,(400,450))
         
-        pygame.display.update() #aktualizujemy ekran
+        pygame.display.update() # Display update
         clock.tick(30)    
 
         
 
-# zegar gry
+# Game clock
 clock = pygame.time.Clock()
-# gracz
+# Player
 player = Player()
 player.rect.y = 690
 player.rect.x=512
 plgrp=pygame.sprite.Group()
 plgrp.add(player)
-#pociski
+# Missiles
 misgrp=pygame.sprite.Group()
 emisgrp=pygame.sprite.Group() 
-# przeciwnicy
+# Enemies
 enemygrp=pygame.sprite.Group()
 enemy = Enemy()
 enemy.rect.x=player.rect.x
 enemygrp.add(enemy)
-# gwiazdki
+# stars in background
 stargrp = pygame.sprite.Group()
 # joystick
-pygame.joystick.init()
+pygame.joystick.init() # to do - using pad in the game 
 
 
 
 # życia
-lives = 6 # jest 5 ale jedno się zjada 
+lives = 6 # 6 beaceuse one of then them is wasted in first iteration
 
-# pętla gry
-lp = 0 #licznik programu
+
+lp = 0 #program counter
+
+# main game loop
 while  not gameExit:
     lp+=1
     star = Star()
     stargrp.add(star)
-    #print len(misgrp.sprites())
+
     plcollenemy = pygame.sprite.spritecollideany(player,enemygrp)
     plcollemissile =pygame.sprite.spritecollideany(player,emisgrp)
     if plcollenemy or plcollemissile:
@@ -110,12 +112,12 @@ while  not gameExit:
     enes = Logic.getStuff(lp)
     for e in enes:
         enemygrp.add(e)
-    # czytamy zdarzenia
+    # reading events
     for event in pygame.event.get():
-        # sprawdzam czy zamknięto okienko
+        # Chcecking if the window is closed
         if event.type == pygame.QUIT:
             gameExit=True
-        # poruszanie graczem
+        # Moving player
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 if player.rect.x>0:
@@ -134,7 +136,7 @@ while  not gameExit:
                 misgrp.add(missile)
             if event.key == pygame.K_1:
                 banner('pause')
-        if event.type == pygame.KEYUP: # sprawdzam czy przycisk wciśnięty
+        if event.type == pygame.KEYUP: # Checking if button is pressed
             if not player.state=='dead':
                 player.idle()
     
@@ -153,6 +155,6 @@ while  not gameExit:
     emisgrp.draw(gameDisplay)
     pygame.display.update() #aktualizujemy ekran
     clock.tick(30)    
-# opuszczamy program
+# leaving app
 pygame.quit()
 quit()
