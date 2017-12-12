@@ -27,6 +27,8 @@ def banner(txt):
             if event.type == pygame.KEYDOWN:
                 if event.key==pygame.K_UP:
                     done=True
+            if event.type == pygame.JOYBUTTONDOWN:
+                done=True
         gameDisplay.fill(BLACK)
         label = mybiggerfont.render(txt, 1, (255,255,0))
         ptnlab = mybiggerfont.render('points: '+str(points), 1, (255,255,0))
@@ -57,9 +59,8 @@ enemygrp.add(enemy)
 # stars in background
 stargrp = pygame.sprite.Group()
 # joystick
-pygame.joystick.init() # to do - using pad in the game 
-
-
+pygame.joystick.init() # to do - using pad in the game
+noj = pygame.joystick.get_count()
 
 # życia
 lives = 6 # 6 beaceuse one of then them is wasted in first iteration
@@ -69,6 +70,9 @@ lp = 0 #program counter
 
 # main game loop
 while  not gameExit:
+    if noj >0:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
     lp+=1
     star = Star()
     stargrp.add(star)
@@ -139,7 +143,26 @@ while  not gameExit:
         if event.type == pygame.KEYUP: # Checking if button is pressed
             if not player.state=='dead':
                 player.idle()
-    
+        if noj >0:
+            if event.type == pygame.JOYBUTTONDOWN:
+                missile = Missile()
+                missile.rect.y=player.rect.y
+                missile.rect.x=player.rect.x+45
+                misgrp.add(missile)
+            lr=joystick.get_axis(0)
+            ud=joystick.get_axis(1)
+ #       print lr
+            if lr<=-0.9:
+                player.go_left()
+            elif lr>=0.9:
+                player.go_right()        
+            elif ud <=-0.9:
+                player.go_up()
+            elif ud >= 0.9:
+                player.go_down()
+            else :
+                player.idle()
+
     gameDisplay.fill(BLACK)
     label = myfont.render("PC:"+str(lp)+" points: "+str(points)+" lives: "+str(lives), 1, (255,255,0))
     gameDisplay.blit(label,(10,10))
@@ -154,7 +177,7 @@ while  not gameExit:
     enemygrp.draw(gameDisplay)
     emisgrp.draw(gameDisplay)
     pygame.display.update() #aktualizujemy ekran
-    clock.tick(30)    
+    clock.tick(35)    
 # leaving app
 pygame.quit()
 quit()
